@@ -1,23 +1,21 @@
 import os
-import psycopg2,psycopg2.extras
 from flask import Flask, render_template
+
+from utils import create_cursor, get_db_conn
+import auth
+
+
 
 
 app = Flask(__name__)
+app.register_blueprint(auth.auth_routes, url_prefix="/auth")
 
-def get_db_conn():
-    conn = psycopg2.connect(
-        host = "10.10.16.10",
-        database = "charart",
-        user = "charart",
-        password = "charart123"
-    )
-    return conn
+
 
 @app.route("/profiles")
 def get_profiles():
     conn = get_db_conn()
-    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur = create_cursor(conn); 
     cur.execute("SELECT * FROM profiles")
     ret_data = [dict(row) for row in cur]
     cur.close()

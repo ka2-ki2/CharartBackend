@@ -1,0 +1,1 @@
+JWT_SECRET_KEY = ")@(#JF)@(#JFG)@(#GJ_)WDJ_)SDJG_)SADJG_)@#JG_)JWEG9-0j"

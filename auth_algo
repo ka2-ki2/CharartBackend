@@ -1,0 +1,7 @@
+login
+    handler for POST request - data is in body instead of the URL
+    params: user, pass - already be hashed
+    verify user name password correct
+        incorrect - 401
+        correct - generate jwt, store in db, return
+            - website stores as cookie in browser
