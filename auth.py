@@ -28,7 +28,7 @@ def login():
     cur = create_cursor(conn)
     username, password = request.form["username"], request.form["password"]
     if not authenticate_user(cur, username, password):
-        return "", 403
+        return "", 401
     users = list(cur)
     jwt_tok = jwt.encode({"user_id": users[0]["id"]}, JWT_SECRET_KEY, algorithm="HS256")
     cur.execute("UPDATE users SET jwt = '" + jwt_tok + "' WHERE id=" + str(users[0]["id"]))
@@ -42,7 +42,7 @@ def logout():
     cur = create_cursor(conn)
     username, password = request.form["username"], request.form["password"]
     if not authenticate_user(cur, username, password):
-        return "", 403
+        return "", 401
 
     users = list(cur)
     cur.execute("UPDATE users SET jwt = NULL WHERE id=" + str(users[0]["id"]))
@@ -57,7 +57,7 @@ def verify_ckie():
     ckie = request.form["ckie"]
     data = jwt.decode(ckie, JWT_SECRET_KEY, algorithms=["HS256"])
     if not authenticate_ckie(cur, ckie, data["user_id"]):
-        return "", 403
+        return "", 401
     else:
         return ""
 

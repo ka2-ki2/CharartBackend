@@ -11,7 +11,7 @@ def get_user():
     cur = create_cursor(conn)
     user_id, ckie = request.form["user_id"], request.form["ckie"]
     if not authenticate_ckie(cur, ckie, user_id):
-        return "", 403
+        return "", 401
     res = cur.execute("SELECT username, prof_pic, name FROM users WHERE id = %s", params=[user_id])
     if cur.rowcount == 0:
         return "", 404
