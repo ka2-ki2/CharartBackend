@@ -24,10 +24,12 @@ def authenticate_ckie(cur, ckie):
 
 @auth_routes.route("/login", methods=["POST"])
 def login():
-
     conn = get_db_conn()
     cur = create_cursor(conn)
-    username, password = request.form["username"], request.form["password"]
+    form = request.get_json()
+    if not form:
+        form = request.form
+    username, password = form["username"], form["password"]
     if not authenticate_user(cur, username, password):
         return "", 401
     users = list(cur)
@@ -35,7 +37,7 @@ def login():
     cur.execute("UPDATE users SET jwt = '" + jwt_tok + "' WHERE id=" + str(users[0]["id"]))
     conn.commit()
     conn.close()
-    return jwt_tok
+    return {"token": jwt_tok}
 
 @auth_routes.route("/logout", methods=["POST"])
 def logout():
@@ -55,7 +57,10 @@ def logout():
 def verify_ckie():
     conn = get_db_conn()
     cur = create_cursor(conn)
-    ckie = request.form["ckie"]
+    form = request.get_json()
+    if not form:
+        form = request.form
+    ckie = form["ckie"]
     data = jwt.decode(ckie, JWT_SECRET_KEY, algorithms=["HS256"])
     user_id = authenticate_ckie(cur, ckie)
     if not user_id:

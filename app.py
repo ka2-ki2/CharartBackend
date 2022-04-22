@@ -1,5 +1,6 @@
 import os
 from flask import Flask, render_template
+from flask_cors import CORS
 from utils import create_cursor, get_db_conn
 import auth
 import chars
@@ -15,12 +16,5 @@ app.register_blueprint(chars.char_routes, url_prefix="/char")
 app.register_blueprint(users.user_routes, url_prefix="/user")
 app.register_blueprint(bids.bid_routes, url_prefix="/bid")
 
+CORS(app)
 
-# put this sippet ahead of all your bluprints
-# blueprint can also be app~~
-@app.after_request 
-def after_request(response):
-    header = response.headers
-    header['Access-Control-Allow-Origin'] = '*'
-    # Other headers can be added here if required
-    return response
