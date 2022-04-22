@@ -13,13 +13,14 @@ def authenticate_user(cur, username, password):
     )
     return cur.rowcount == 1
 
-def authenticate_ckie(cur, ckie, user_id):
+def authenticate_ckie(cur, ckie):
     cur.execute(
-        "SELECT id FROM users WHERE jwt = %s AND id = %s",
-        params=[ckie, user_id],
+        "SELECT id FROM users WHERE jwt = %s",
+        params=[ckie],
         prepare=True
     )
-    return cur.rowcount == 1
+    user_id = cur.fetchone()
+    return user_id
 
 @auth_routes.route("/login", methods=["POST"])
 def login():
@@ -56,10 +57,11 @@ def verify_ckie():
     cur = create_cursor(conn)
     ckie = request.form["ckie"]
     data = jwt.decode(ckie, JWT_SECRET_KEY, algorithms=["HS256"])
-    if not authenticate_ckie(cur, ckie, data["user_id"]):
+    user_id = authenticate_ckie(cur, ckie)
+    if not user_id:
         return "", 401
     else:
-        return ""
+        return str(user_id)
 
 
 
