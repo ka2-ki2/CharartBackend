@@ -1,4 +1,5 @@
 from flask import Blueprint, request
+from flask_cors import CORS
 from constants import JWT_SECRET_KEY
 import jwt
 from utils import create_cursor, get_db_conn
@@ -43,12 +44,16 @@ def login():
 def logout():
     conn = get_db_conn()
     cur = create_cursor(conn)
-    username, password = request.form["username"], request.form["password"]
-    if not authenticate_user(cur, username, password):
+
+    form = request.get_json()
+    if not form:
+        form = request.form
+    ckie = form["ckie"]
+    user_id = authenticate_ckie(cur, ckie)
+    if not user_id:
         return "", 401
 
-    users = list(cur)
-    cur.execute("UPDATE users SET jwt = NULL WHERE id=" + str(users[0]["id"]))
+    cur.execute("UPDATE users SET jwt = NULL WHERE id=" + user_id)
     conn.commit()
     conn.close()
     return ""
@@ -61,6 +66,7 @@ def verify_ckie():
     if not form:
         form = request.form
     ckie = form["ckie"]
+    print(ckie)
     data = jwt.decode(ckie, JWT_SECRET_KEY, algorithms=["HS256"])
     user_id = authenticate_ckie(cur, ckie)
     if not user_id:
@@ -69,4 +75,4 @@ def verify_ckie():
         return str(user_id)
 
 
-
+CORS(auth_routes)

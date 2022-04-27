@@ -11,10 +11,10 @@ import bids
 
 
 app = Flask(__name__)
+CORS(app)
+chars.define_routes(app)
 app.register_blueprint(auth.auth_routes, url_prefix="/auth")
-app.register_blueprint(chars.char_routes, url_prefix="/char")
 app.register_blueprint(users.user_routes, url_prefix="/user")
 app.register_blueprint(bids.bid_routes, url_prefix="/bid")
 
-CORS(app)
 
