@@ -1,4 +1,4 @@
-from flask import Blueprint, request, Response
+from flask import request 
 import json
 from flask_cors import cross_origin
 from utils import get_db_conn, create_cursor
@@ -21,7 +21,7 @@ def define_routes(app):
         conn = get_db_conn()
         cur = create_cursor(conn)
         ckie = request.form["ckie"]
-        user_id = authenticate_ckie(cur, ckie)
+        user_id = authenticate_ckie(cur, ckie)['id']
         if not user_id:
             return "", 401
         
@@ -32,6 +32,7 @@ def define_routes(app):
             request.form["bio"],
             request.form["is_open"]
         )
+        print(name,avatar,main_img,bio,is_open,user_id)
         if not char_id: 
             cur.execute(
                 "INSERT INTO characters(name, avatar, main_img, bio, is_open, designer, owner) VALUES(%s, %s, %s, %s, %s, %s, %s) RETURNING id",
@@ -70,7 +71,7 @@ def define_routes(app):
         if not user_id:
             return "", 401
         cur.execute("SELECT avatar,bio,designer,name,owner FROM characters")
-        return Response(json.dumps(cur.fetchall()), mimetype='application/json')
+        return cur.fetchall()
 
     @app.route("/char/get_owned/<search_user_id>", methods=["POST"])
     @cross_origin()
