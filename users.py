@@ -6,7 +6,7 @@ from auth import authenticate_ckie
 user_routes = Blueprint("user", __name__)
 
 @user_routes.route("/get_profile_info", methods=["POST"])
-def get_user(search_user_id):
+def get_user():
     conn = get_db_conn()
     cur = create_cursor(conn)
     ckie = request.form["ckie"]
@@ -22,7 +22,7 @@ def get_user(search_user_id):
 
 
 @user_routes.route("/get_profiles", methods=["POST"])
-def get_all_users(search_user_id):
+def get_all_users():
     conn = get_db_conn()
     cur = create_cursor(conn)
     ckie = request.form["ckie"]
