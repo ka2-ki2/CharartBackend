@@ -71,7 +71,7 @@ def define_routes(app):
         if not user_id:
             return "", 401
         cur.execute("SELECT avatar,bio,designer,name,owner FROM characters")
-        return cur.fetchall()
+        return {"data": cur.fetchall()}
 
     @app.route("/char/get_owned/<search_user_id>", methods=["POST"])
     @cross_origin()
