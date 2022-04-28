@@ -90,7 +90,7 @@ def define_routes(app):
         if not user_id:
             return "", 401
         cur.execute(
-            "SELECT avatar,bio,designer,name,owner FROM characters WHERE id=%s",
+            "SELECT avatar,bio,designer,name,owner,monees,highest_bidder,is_open FROM characters WHERE id=%s",
             params=[char_id],
             prepare=True
         )
