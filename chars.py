@@ -73,7 +73,7 @@ def define_routes(app):
         cur.execute("SELECT avatar,bio,designer,name,owner FROM characters")
         return {"data": cur.fetchall()}
 
-    
+
     @app.route("/char/get_char", methods=["POST"])
     @cross_origin()
     def get_char():
@@ -83,6 +83,7 @@ def define_routes(app):
         form = request.get_json()
         if not form:
             form = request.form
+
         ckie = form["ckie"]
         char_id = int(form["char_id"])
         user_id = authenticate_ckie(cur, ckie)
@@ -93,7 +94,7 @@ def define_routes(app):
             params=[char_id],
             prepare=True
         )
-        return {"data": cur.fetchone()}
+        return {"data": cur.fetchall()}
 
     @app.route("/char/get_owned/<search_user_id>", methods=["POST"])
     @cross_origin()
