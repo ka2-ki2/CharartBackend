@@ -38,7 +38,7 @@ def login():
     cur.execute("UPDATE users SET jwt = '" + jwt_tok + "' WHERE id=" + str(users[0]["id"]))
     conn.commit()
     conn.close()
-    return {"token": jwt_tok}
+    return {"token": jwt_tok, "user_id": users[0]["id"]}
 
 @auth_routes.route("/logout", methods=["POST"])
 def logout():
