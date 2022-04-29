@@ -16,6 +16,9 @@ def open_bid(char_id):
     user_id = authenticate_ckie(cur, ckie)
     if not user_id:
         return "", 401
+
+    user_id = user_id['id']
+
     min_bid_increment = float(form["min_bid_increment"]) 
     cur.execute("SELECT owner FROM characters WHERE id = %s", params=[int(char_id)], prepare=True)
     if cur.rowcount == 0:
@@ -46,6 +49,7 @@ def close_bid(char_id):
     user_id = authenticate_ckie(cur, ckie)
     if not user_id:
         return "", 401
+    user_id = user_id['id']
 
     cur.execute("SELECT owner FROM characters WHERE id = %s", params=[int(char_id)], prepare=True)
     if cur.rowcount == 0:
@@ -78,6 +82,7 @@ def beed(char_id):
     if not user_id:
         return "", 401
 
+    user_id = user_id['id']
     cur.execute("SELECT owner FROM characters WHERE id = %s RETURNING min_bid_increment", params=[int(char_id)], prepare=True)
     if cur.rowcount == 0:
         return "", 404
