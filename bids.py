@@ -4,7 +4,7 @@ from flask_cors import CORS
 from utils import get_db_conn, create_cursor
 from auth import authenticate_ckie
 bid_routes = Blueprint("bid", __name__)
-@bid_routes.route("/open/char_id")
+@bid_routes.route("/open/<char_id>")
 def open_bid(char_id):
     conn = get_db_conn()
     cur = create_cursor(conn)
@@ -35,7 +35,7 @@ def open_bid(char_id):
     else:
         return "open", 400
 
-@bid_routes.route("/close/char_id")
+@bid_routes.route("/close/<char_id>")
 def close_bid(char_id):
     conn = get_db_conn()
     cur = create_cursor(conn)
@@ -65,7 +65,7 @@ def close_bid(char_id):
     else:
         return "closed", 400
 
-@bid_routes.route("/beed/char_id")
+@bid_routes.route("/beed/<char_id>")
 def beed(char_id):
     conn = get_db_conn()
     cur = create_cursor(conn)
