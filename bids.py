@@ -92,7 +92,7 @@ def beed(char_id):
     min_bid_increment = cur.fetchone()
 
     cur.execute("SELECT is_open FROM characters WHERE id = %s", params=[int(char_id)], prepare=True)
-    is_open = cur.fetchone()
+    is_open = cur.fetchone()['is_open']
 
     # Character existence verified during ownership check
     if is_open:
