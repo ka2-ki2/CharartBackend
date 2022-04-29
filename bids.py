@@ -16,7 +16,7 @@ def open_bid(char_id):
     user_id = authenticate_ckie(cur, ckie)
     if not user_id:
         return "", 401
-
+    min_bid_increment = float(form["min_bid_increment"]) 
     cur.execute("SELECT owner FROM characters WHERE id = %s", params=[int(char_id)], prepare=True)
     if cur.rowcount == 0:
         return "", 404
@@ -29,8 +29,8 @@ def open_bid(char_id):
     is_open = cur.fetchone()
 
     # Character existence verified during ownership check
-    if is_open:
-        cur.execute("UPDATE characters SET is_open=true WHERE id = %s", params=[int(char_id)], prepare=True)
+    if not is_open:
+        cur.execute("UPDATE characters SET is_open=true,min_bid_increment=%s WHERE id = %s", params=[int(char_id), min_bid_increment], prepare=True)
         return ""
     else:
         return "open", 400
@@ -60,7 +60,7 @@ def close_bid(char_id):
 
     # Character existence verified during ownership check
     if is_open:
-        cur.execute("UPDATE characters SET owner=highest_bidder,is_open=false WHERE id = %s", params=[int(char_id)], prepare=True)
+        cur.execute("UPDATE characters SET owner=highest_bidder,is_open=false,monees=0,min_bid_increment=1 WHERE id = %s", params=[int(char_id)], prepare=True)
         return ""
     else:
         return "closed", 400
@@ -78,10 +78,10 @@ def beed(char_id):
     if not user_id:
         return "", 401
 
-    cur.execute("SELECT owner FROM characters WHERE id = %s", params=[int(char_id)], prepare=True)
+    cur.execute("SELECT owner FROM characters WHERE id = %s RETURNING min_bid_increment", params=[int(char_id)], prepare=True)
     if cur.rowcount == 0:
         return "", 404
-
+    min_bid_increment = cur.fetchone()
 
     cur.execute("SELECT is_open FROM characters WHERE id = %s", params=[int(char_id)], prepare=True)
     is_open = cur.fetchone()
@@ -91,10 +91,11 @@ def beed(char_id):
         value = float(request.form["monees"])
         cur.execute("SELECT monees from characters WHERE id=%s", params=[int(char_id)], prepare=True)
         highest_val = float(cur.fetchone())
-        if not highest_val or highest_val >= value:
+        if not highest_val or highest_val <= value - min_bid_increment:
+            cur.execute("UPDATE characters SET highest_bidder=%s,monees=%s", params=[user_id, value], prepare=True)
+            return ""
+        else:
             return "low", 400
-        cur.execute("UPDATE characters SET highest_bidder=%s,monees=%s", params=[user_id, value], prepare=True)
-        return ""
     else:
         return "closed", 400
     
